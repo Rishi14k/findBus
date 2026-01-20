@@ -7,7 +7,7 @@ const busSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Route",
       required: true,
-      trim: true,
+      trim: true,   
     },
     fare: {type: Number, required: true},
     serviceType: {
