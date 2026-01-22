@@ -6,7 +6,7 @@ const LiveBus = require('../../models/LiveBus');
 const getAllBusesForDriver = async(req,res)=>{
     try {
         const buses = await Bus.find({isActive:true}).populate('routeId');
-        return res.status(200).json({success:true, buses});
+        return res.status(200).json({success:true, data:buses});
     } catch (error) {
         return res.status(500).json({success:false, message: error.message});
     }

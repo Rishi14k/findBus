@@ -73,7 +73,7 @@ const getSingleBus = async (req, res) => {
     if (!bus) {
       return res.status(400).json({success: false, message: "Bus not found"});
     }
-    res.status(200).json({success: true, bus});
+    res.status(200).json({success: true,data: bus});
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -118,7 +118,7 @@ const updateBus = async (req, res) => {
     res.json({
       success: true,
       message: "Bus updated successfully",
-      bus,
+      data:bus,
     });
   } catch (error) {
     res.status(500).json({

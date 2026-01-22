@@ -62,8 +62,19 @@ const Login = () => {
          const res = await verifyOtpApi(email, otp);
 
          localStorage.setItem("token", res.data.token);
+         localStorage.setItem("user", JSON.stringify(res.data.user));
          toast.success("Login successful!");
-         navigate("/")
+         
+         const role = res.data.user.role;
+
+         if (role === "admin") {
+           navigate("/admin/dashboard");
+         } else if (role === "driver") {
+           navigate("/driver/dashboard");
+         } else {
+           navigate("/");
+         }
+
        } catch (error) {
          toast.error(error.response?.data?.message || "Invalid or expired OTP");
        } finally {
@@ -89,6 +100,7 @@ const Login = () => {
        try {
          const res = await googleLoginApi(idToken);
          localStorage.setItem("token",res.data.token)
+         localStorage.setItem("user", JSON.stringify(res.data.user));
          toast.success("Login successfully!")
        } catch (error) {
         toast.error("Login failed")

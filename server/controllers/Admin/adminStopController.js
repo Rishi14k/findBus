@@ -10,7 +10,7 @@ const createStop = async(req,res)=>{
             name,
             location:{
                 type:"Point",
-                coordinates:[lat,lng]
+                coordinates:[lng,lat]
             }
         })
         return res.status(201).json({success:true,data:stop})
@@ -71,9 +71,33 @@ const toggleStopStatus = async(req,res)=>{
     }
 }
 
+const deleteStop = async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Admins only",
+      });
+    }
+
+    await Stop.findByIdAndDelete(req.params.stopId);
+
+    res.json({
+      success: true,
+      message: "Stop deleted permanently",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
     createStop,
     getAllStops,
     updateStop,
-    toggleStopStatus
+    toggleStopStatus,
+    deleteStop
 }

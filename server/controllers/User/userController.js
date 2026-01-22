@@ -24,7 +24,7 @@ const searchBusByNumber = async (req, res) => {
     res.status(200).json({
       success: true,
       count: buses.length,
-      buses,
+      data:buses,
     });
   } catch (error) {
     res.status(500).json({success: false, message: error.message});
@@ -53,7 +53,7 @@ const getBusesBetweenStops = async (req, res) => {
       isActive: true,
     }).populate("routeId");
 
-    res.json({success: true, buses});
+    res.json({success: true, data:buses});
   } catch (err) {
     res.status(500).json({success: false, message: err.message});
   }
@@ -68,7 +68,7 @@ const getBusesOnRoute = async (req, res) => {
       isActive: true,
     });
 
-    res.json({success: true, buses});
+    res.json({success: true, data:buses});
   } catch (err) {
     res.status(500).json({success: false, message: err.message});
   }
@@ -123,7 +123,7 @@ const getLiveBusesOnRoute = async (req, res) => {
 
     res.json({
       success: true,
-      liveBuses,
+      data:liveBuses,
     });
   } catch (err) {
     res.status(500).json({success: false, message: err.message});
@@ -145,7 +145,7 @@ const getRouteDetails = async(req,res)=>{
 
      res.json({
        success: true,
-       route,
+       data:route,
      });
    } catch (err) {
      res.status(500).json({success: false, message: err.message});

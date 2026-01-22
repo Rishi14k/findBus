@@ -112,7 +112,7 @@ const addDriver = async (req, res) => {
       });
     }
 
-    const {email} = req.body;
+    const {email,name} = req.body;
 
     let driver = await User.findOne({email});
 
@@ -123,6 +123,7 @@ const addDriver = async (req, res) => {
     } else {
       driver = new User({
         email,
+        name,
         role: "driver",
       });
     }

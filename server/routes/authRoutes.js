@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {authMiddleware} = require("../middleware/authMiddleware");
+const {authMiddleware, adminOnly} = require("../middleware/authMiddleware");
 const {
   requestOtp,
   verifyOtp,
@@ -15,6 +15,6 @@ router.post('/google-login',googleLogin);
 router.get('/me',authMiddleware,getMe);
 
 //admin
-router.post('/add-driver',authMiddleware,addDriver);
+router.post('/add-driver',authMiddleware,adminOnly,addDriver);
 
 module.exports = router;
