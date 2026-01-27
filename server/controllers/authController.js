@@ -160,12 +160,48 @@ const addDriver = async (req, res) => {
   }
 };
 
+const magicLinkLogin = async(req,res)=>{
+  try {
+    const {token} = req.body;
 
+    const user = await User.findOne({
+      "magicLink.token": token,
+      "magicLink.expiresAt": {$gt: Date.now()},
+    });
+
+    if(!user){
+      return res.status(400).json({success:false,message:"Invalid or expired Link"})
+    }
+
+    user.magicLink = undefined
+    user.isVerified = true;
+
+    await user.save()
+
+    const authToken = createToken(user)
+
+    return res.status(200).json({
+      success: true,
+      token: authToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: "Magic link login failed",
+      });
+  }
+}
 
 module.exports = {
     requestOtp,
     verifyOtp,
     googleLogin,
     getMe,
-    addDriver
+    addDriver,
+    magicLinkLogin
 }

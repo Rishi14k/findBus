@@ -1,9 +1,10 @@
 import React from 'react'
+import DriverDashboard from '../../components/driver/DriverDashboard'
 
 const DriverHome = () => {
   return (
     <div>
-      Driver Home Page
+     <DriverDashboard/>
     </div>
   )
 }

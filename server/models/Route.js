@@ -29,6 +29,6 @@ const routeSchema = new mongoose.Schema(
   {timestamps: true},
 );
 
-routeSchema.index({'stops.location':'2dsphere'});
+// routeSchema.index({'stops.location':'2dsphere'});
 
 module.exports = mongoose.model('Route', routeSchema);

@@ -7,6 +7,7 @@ const {
   googleLogin,
   getMe,
   addDriver,
+  magicLinkLogin,
 } = require("../controllers/authController");
 
 router.post('/request-otp',requestOtp);
@@ -16,5 +17,7 @@ router.get('/me',authMiddleware,getMe);
 
 //admin
 router.post('/add-driver',authMiddleware,adminOnly,addDriver);
+
+router.post('/magic-link',magicLinkLogin)
 
 module.exports = router;

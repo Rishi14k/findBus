@@ -6,12 +6,6 @@ const SelectField = ({ label,
   onChange,
   options,
   required = false,}) => {
-    console.log(
-      "Select value:",
-      value,
-      "Options:",
-      options.map((o) => o.value),
-    );
 
   return (
     <div>

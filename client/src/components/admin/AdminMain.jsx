@@ -163,9 +163,9 @@ useEffect(() => {
                 type: "select",
                 options: allRoutes.map((r) => ({
                   label: `${r.routeName} (${r.routeCode})`,
-                  value: String(r._id),
+                  value: r._id,
                 })),
-                // required: true,
+                required: true,
               },
               {label: "Fare", name: "fare", type: "number", required: true},
               {

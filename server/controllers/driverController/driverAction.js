@@ -17,7 +17,7 @@ const selectBus = async (req, res) => {
     const {busId} = req.body;
 
     const existing = await LiveBus.findOne({
-      driverId: req.user._id,
+      driverId: req.user.userId,
       status: {$ne: "off-duty"},
     });
 
@@ -36,7 +36,7 @@ const selectBus = async (req, res) => {
     const liveBus = await LiveBus.create({
       busId,
       routeId: bus.routeId,
-      driverId: req.user._id,
+      driverId: req.user.userId,
       location: {
         type: "Point",
         coordinates: [0, 0], // placeholder
@@ -53,22 +53,30 @@ const selectBus = async (req, res) => {
 
 const getDriverDashboard = async(req,res)=>{
     try {
-        const liveBus = await LiveBus.findOne({driverId:req.user._id}).populate({
-            path:'busId',
-            populate:{path:'routeId'}
-        })
+        const liveBus = await LiveBus.findOne({
+          driverId: req.user.userId,
+        }).populate({
+          path: "busId",
+          populate: {
+            path: "routeId",
+            populate: {
+              path: "stops.stop", // <-- populate each stop inside route
+            },
+          },
+        });
         if(!liveBus){
             return res.status(404).json({success:false, message:"Please select a bus to view dashboard."});
         }
         res.json({
-            success:true,
-            data:{
-                bus:liveBus.busId,
-                route:liveBus.busId.routeId,
-                status: liveBus.status,
-                lastUpdated: liveBus.lastUpdated,
-            }
-        })
+          success: true,
+          data: {
+            bus: liveBus.busId,
+            route: liveBus.busId.routeId,
+            status: liveBus.status,
+            lastUpdated: liveBus.lastUpdated,
+            busId: liveBus.busId._id,
+          },
+        });
     } catch (error) {
         res.status(500).json({success:false, message: error.message});
     }
@@ -78,7 +86,7 @@ const toggleDuty = async (req, res) => {
   try {
     const {onDuty} = req.body;
 
-    const liveBus = await LiveBus.findOne({driverId: req.user._id});
+    const liveBus = await LiveBus.findOne({driverId: req.user.userId});
     if (!liveBus) {
       return res.status(404).json({
         success: false,

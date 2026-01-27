@@ -33,11 +33,8 @@ const server = http.createServer(app);
 const PORT = process.env.PORT || 5000;
 
 
-app.get('/',(req,res)=>{
-    res.send('Server is running');
-})
 app.use('/api/auth',authRoutes);
-app.use('/api/driver',requireDriver,driverRoutes);
+app.use('/api/driver',authMiddleware,requireDriver,driverRoutes);
 app.use('/api/admin',authMiddleware,requireAdmin,adminRoutes);
 app.use('/api/user',userRoutes)
 

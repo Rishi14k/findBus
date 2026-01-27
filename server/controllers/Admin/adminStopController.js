@@ -1,23 +1,37 @@
 const Stop = require('../../models/Stop');
 
-const createStop = async(req,res)=>{
-    try {
-        const {name,lat,lng} =req.body
-        if(!name || !lat || !lng){
-            return res.status(400).json({success:false,message:"All fields are required"})
-        }
-        const stop = await Stop.create({
-            name,
-            location:{
-                type:"Point",
-                coordinates:[lng,lat]
-            }
-        })
-        return res.status(201).json({success:true,data:stop})
-    } catch (error) {
-        res.status(500).json({success:false,message:error.message})   
+const createStop = async (req, res) => {
+  try {
+    const {name, location} = req.body;
+
+    if (
+      !name ||
+      !location ||
+      !Array.isArray(location.coordinates) ||
+      location.coordinates.length !== 2
+    ) {
+      return res
+        .status(400)
+        .json({success: false, message: "All fields are required"});
     }
-}
+
+    const stop = await Stop.create({
+      name,
+      location: {
+        type: "Point",
+        coordinates: [
+          Number(location.coordinates[0]), // lng
+          Number(location.coordinates[1]), // lat
+        ],
+      },
+    });
+
+    return res.status(201).json({success: true, data: stop});
+  } catch (error) {
+    res.status(500).json({success: false, message: error.message});
+  }
+};
+
 
 const getAllStops = async(req,res)=>{
     try {

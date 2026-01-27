@@ -18,4 +18,6 @@ const stopSchema = new mongoose.Schema({
   isActive: {type: Boolean, default: true},
 },{ timestamps: true });
 
+stopSchema.index({location: "2dsphere"});
+
 module.exports = mongoose.model('Stop', stopSchema);

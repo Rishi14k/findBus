@@ -42,6 +42,7 @@ const createRoute = async (req, res) => {
 
     const coordinates = sortedStops.map((s) => {
       const stop = stopMap[s.stop];
+      console.log(`Stop ID: ${s.stop}, Coords: ${stop.location.coordinates}`);
       return stop.location.coordinates; // [lng, lat]
     });
 

@@ -125,6 +125,10 @@ const handleSubmit = async (e) => {
       delete payload.lat;
       delete payload.lng;
     }
+    // 🔥 FIX routeId
+    if (payload.routeId && typeof payload.routeId === "object") {
+      payload.routeId = payload.routeId.value || payload.routeId._id;
+    }
 
 
     if (currentRecord) {

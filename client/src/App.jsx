@@ -1,13 +1,15 @@
-import React from 'react'
-import { Route, Routes } from 'react-router-dom'
-import Home from './pages/Home'
-import Login from './pages/Login'
+import React from "react";
+import {Route, Routes} from "react-router-dom";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
 import {ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Protect from './components/Protect';
-import AdminHome from './pages/Admin/AdminHome';
-import DriverHome from './pages/Driver/DriverHome';
-import Unauthorise from './pages/Unauthorise';
+import Protect from "./components/Protect";
+import AdminHome from "./pages/Admin/AdminHome";
+import DriverHome from "./pages/Driver/DriverHome";
+import Unauthorise from "./pages/Unauthorise";
+import MagicLinkLogin from "./components/driver/MagicLinkLogin";
+import SelectBus from "./pages/Driver/SelectBus";
 
 const App = () => {
   return (
@@ -15,7 +17,8 @@ const App = () => {
       <Routes>
         {/* public  */}
         <Route path="/login" element={<Login />} />
-        <Route path="/unauthorized" element={<Unauthorise/>}/>
+        <Route path="/unauthorized" element={<Unauthorise />} />
+        <Route path="/magic-link" element={<MagicLinkLogin />} />
 
         {/* admin  */}
         <Route element={<Protect allowedRoles={["admin"]} />}>
@@ -24,19 +27,19 @@ const App = () => {
 
         {/* driver  */}
         <Route element={<Protect allowedRoles={["driver"]} />}>
+          <Route path="/driver/select-bus" element={<SelectBus />} />
           <Route path="/driver/dashboard" element={<DriverHome />} />
         </Route>
 
-      {/* user + admin  */}
+        {/* user + admin  */}
         <Route element={<Protect allowedRoles={["user", "admin"]} />}>
           <Route path="/" element={<Home />} />
         </Route>
-
       </Routes>
 
       <ToastContainer />
     </>
   );
-}
+};
 
-export default App
+export default App;
