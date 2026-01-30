@@ -48,6 +48,10 @@ const liveBusSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    assignedBus:{
+      type:Boolean,
+      default:false
+    }
   },
   {timestamps: true}
 );

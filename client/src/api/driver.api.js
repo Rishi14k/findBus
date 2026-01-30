@@ -15,3 +15,7 @@ export const getDriverDashboardApi = ()=>{
 export const toggleDriverDutyApi = (data)=>{
     return apiClient.post("/driver/toggle-duty",data);
 }
+
+export const clearBusDriverApi = () => {
+  return apiClient.post("/driver/clear-bus");
+};

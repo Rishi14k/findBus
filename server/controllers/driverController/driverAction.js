@@ -1,7 +1,7 @@
 const Bus = require('../../models/Bus');
 const Route = require('../../models/Route');
 const LiveBus = require('../../models/LiveBus');
-
+const User = require('../../models/User')
 
 const getAllBusesForDriver = async(req,res)=>{
     try {
@@ -15,38 +15,66 @@ const getAllBusesForDriver = async(req,res)=>{
 const selectBus = async (req, res) => {
   try {
     const {busId} = req.body;
+    const driverId = req.user.userId;
 
-    const existing = await LiveBus.findOne({
-      driverId: req.user.userId,
-      status: {$ne: "off-duty"},
+    // 1. Check if driver already has an active bus
+    const existingDriverBus = await LiveBus.findOne({
+      driverId,
+      // status: {$ne: "off-duty"}, // running or holding
+      assignedBus:true
     });
 
-    if (existing) {
+    if (existingDriverBus) {
       return res.status(400).json({
         success: false,
         message: "You are already assigned to a bus",
       });
     }
 
+    // 2. Check if bus is already assigned to another driver
+    // const existingBus = await LiveBus.findOne({
+    //   busId,
+    //   status: {$ne: "running"},
+    // });
+
+    // if (existingBus) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "This bus is already in use",
+    //   });
+    // }
+
+    // 3. Validate bus
     const bus = await Bus.findById(busId);
     if (!bus) {
-      return res.status(404).json({success: false, message: "Bus not found"});
+      return res.status(404).json({
+        success: false,
+        message: "Bus not found",
+      });
     }
 
+    // 4. Create LiveBus entry
     const liveBus = await LiveBus.create({
       busId,
       routeId: bus.routeId,
-      driverId: req.user.userId,
+      driverId,
       location: {
         type: "Point",
-        coordinates: [0, 0], // placeholder
+        coordinates: [0, 0],
       },
-      status: "off-duty",
+      status: "holding", // initial state before running
+      assignedBus:true
     });
 
-    res.json({success: true, data: liveBus});
+    res.json({
+      success: true,
+      data: liveBus,
+    });
   } catch (error) {
-    res.status(500).json({success: false, message: error.message});
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
@@ -72,9 +100,13 @@ const getDriverDashboard = async(req,res)=>{
           data: {
             bus: liveBus.busId,
             route: liveBus.busId.routeId,
-            status: liveBus.status,
+            status: liveBus ? liveBus.status : "off-duty",
             lastUpdated: liveBus.lastUpdated,
             busId: liveBus.busId._id,
+            currentStopIndex: liveBus.currentStopIndex,
+            nextStopIndex: liveBus.nextStopIndex,
+            speed: liveBus.speed,
+            lastLocation: liveBus.location.coordinates, 
           },
         });
     } catch (error) {
@@ -130,9 +162,40 @@ const toggleDuty = async (req, res) => {
   }
 };
 
+const clearSelectedBus = async (req, res) => {
+  try {
+    const driverId = req.user.userId;
+
+    const deleted = await LiveBus.findOneAndDelete({
+      driverId,
+      status: {$ne: "running"}, // delete active (running or holding)
+    });
+
+    if (!deleted) {
+      return res.status(400).json({
+        success: false,
+        message: "No active bus to clear",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Bus cleared successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+
 module.exports = {
     getAllBusesForDriver,
     selectBus,
     getDriverDashboard,
-    toggleDuty
+    toggleDuty,
+    clearSelectedBus
 }

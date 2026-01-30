@@ -4,6 +4,7 @@ const {
   selectBus,
   getDriverDashboard,
   toggleDuty,
+  clearSelectedBus,
 } = require("../controllers/driverController/driverAction");
 
 
@@ -13,5 +14,6 @@ router.get('/buses', getAllBusesForDriver);
 router.post('/select-bus', selectBus);
 router.get('/dashboard', getDriverDashboard);
 router.post('/toggle-duty', toggleDuty);
+router.post('/clear-bus',clearSelectedBus)
 
 module.exports = router;

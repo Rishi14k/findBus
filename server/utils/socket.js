@@ -82,7 +82,7 @@ function initializeSocket(server) {
         );
 
         // 🚏 Stop detection (50 meters)
-        if (minDistance < 0.05) {
+        if (minDistance < 0.01) {
           liveBus.currentStopIndex = nearestIndex;
           liveBus.nextStopIndex =
             nearestIndex + 1 < route.stops.length ? nearestIndex + 1 : null;
@@ -96,7 +96,8 @@ function initializeSocket(server) {
             : null;
 
         // Convert speed m/s ➜ km/h
-        const speedKmph = speed * 3.6;
+        // const speedKmph = speed * 3.6;
+        const speedKmph = speed;
 
         const nextStopCoords = stopsWithCoords[liveBus.nextStopIndex];
 
@@ -161,12 +162,12 @@ function initializeSocket(server) {
     socket.on("disconnect", async () => {
       console.log(`User disconnected: ${socket.id}`);
 
-      if (socket.user?.role === "driver") {
-        await LiveBus.findOneAndUpdate(
-          {driverId: socket.user.userId, status: "running"},
-          {status: "off-duty", lastUpdated: new Date()},
-        );
-      }
+      // if (socket.user?.role === "driver") {
+      //   await LiveBus.findOneAndUpdate(
+      //     {driverId: socket.user.userId, status: "running"},
+      //     {status: "off-duty", lastUpdated: new Date()},
+      //   );
+      // }
     });
   });
 
