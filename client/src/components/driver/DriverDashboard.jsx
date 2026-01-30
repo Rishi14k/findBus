@@ -133,6 +133,9 @@ const DriverDashboard = () => {
         // Update position
         setDriverLocation({lat, lng});
 
+        localStorage.setItem("simIndex",next);
+        localStorage.setItem("driverLocation",JSON.stringify({lat,lng}));
+
         socket.emit("driverLocationUpdate", {
           lat,
           lng,
@@ -258,6 +261,19 @@ const DriverDashboard = () => {
   /* ========== INIT ========== */
 
   useEffect(() => {
+
+      const savedIndex = localStorage.getItem("simIndex");
+      const savedLocation = localStorage.getItem("driverLocation");
+
+      if (savedIndex) {
+        setSimIndex(Number(savedIndex));
+      }
+
+      if (savedLocation) {
+        setDriverLocation(JSON.parse(savedLocation));
+      }
+
+
     fetchDashboard();
   }, []);
 
@@ -321,33 +337,52 @@ const DriverDashboard = () => {
   });
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
+    <div className="h-screen flex flex-col bg-gray-50 text-slate-900 overflow-hidden">
       {/* ===== HEADER ===== */}
-
-      <div className="bg-white shadow px-4 py-3 flex justify-between items-center">
-        <div>
-          <h1 className="font-semibold text-lg text-blue-700">
-            Bus {bus.busNumber}
-          </h1>
-          <p className="text-xs text-gray-600">
-            {route.routeName} ({route.routeCode})
-          </p>
-
+      <header className="bg-white border-b border-gray-200 px-4 py-3 flex justify-between items-center z-10 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="bg-blue-600 p-2 rounded-lg text-white">
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+              />
+            </svg>
+          </div>
+          <div>
+            <h1 className="font-bold text-lg leading-tight text-slate-800">
+              Bus {bus.busNumber}
+            </h1>
+            <p className="text-[10px] uppercase tracking-wider font-semibold text-slate-500">
+              {route.routeName} • {route.routeCode}
+            </p>
+          </div>
+        </div>
+        <div className="flex flex-col items-end gap-1">
+          <StatusBadge status={status} />
           <button
             onClick={handleClearBus}
-            className="rounded-lg mt-5"
-            style={{background: "red", color: "white", padding: "8px"}}
+            className="text-[10px] font-bold text-red-500 hover:text-red-700 transition uppercase underline underline-offset-2"
           >
-            Change / Clear Bus
+            Clear / Change
           </button>
         </div>
-        <StatusBadge status={status} />
-      </div>
+      </header>
 
-      {/* ===== MAP ===== */}
-
-      <div className="flex-grow relative">
-        <MapContainer center={mapCenter} zoom={13} className="absolute inset-0">
+      {/* ===== MAP CONTAINER ===== */}
+      <main className="flex-grow relative bg-slate-200">
+        <MapContainer
+          center={mapCenter}
+          zoom={13}
+          className="absolute inset-0 z-0"
+        >
           <RecenterMap
             position={
               driverLocation
@@ -355,104 +390,155 @@ const DriverDashboard = () => {
                 : mapCenter
             }
           />
-
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-          {/* Route */}
-
+          {/* Route Path */}
           <Polyline
             positions={polylinePoints}
-            pathOptions={{color: "#3b82f6", weight: 5}}
+            pathOptions={{color: "#3b82f6", weight: 6, opacity: 0.7}}
           />
 
-          {/* stops  */}
-
+          {/* Stops */}
           {route.stops?.map((s, index) => {
             if (!s.stop?.location?.coordinates) return null;
-
             const [lng, lat] = s.stop.location.coordinates;
             const isNext = index === data.nextStopIndex;
-
             return (
               <Marker
                 key={index}
                 position={[lat, lng]}
                 icon={isNext ? nextStopIcon : stopIcon}
               >
-                <Popup>
-                  <p className="font-semibold">{s.stop.name}</p>
-                  {isNext && <p>Next Stop</p>}
+                <Popup className="custom-popup">
+                  <div className="p-1">
+                    <p className="font-bold text-slate-800">{s.stop.name}</p>
+                    {isNext && (
+                      <p className="text-blue-600 text-xs font-semibold">
+                        Destination
+                      </p>
+                    )}
+                  </div>
                 </Popup>
               </Marker>
             );
           })}
 
-          {/* Bus marker */}
-
+          {/* Bus Marker */}
           {driverLocation && (
             <Marker
               position={[driverLocation.lat, driverLocation.lng]}
               icon={busIcon}
             >
-              <Popup>ETA: {eta ?? "Calculating..."} min</Popup>
+              <Popup>
+                <div className="text-center">
+                  <p className="text-xs text-gray-500 uppercase">ETA</p>
+                  <p className="text-lg font-bold text-blue-600">
+                    {eta ?? "--"} min
+                  </p>
+                </div>
+              </Popup>
             </Marker>
           )}
         </MapContainer>
-      </div>
 
-      {/* ===== INFO ===== */}
+        {/* Speed Floating Badge */}
+        <div className="absolute top-4 right-4 z-10 bg-white/90 backdrop-blur px-4 py-2 rounded-2xl shadow-lg border border-white flex flex-col items-center">
+          <span className="text-[10px] font-bold text-gray-500 uppercase">
+            Speed
+          </span>
+          <span className="text-2xl font-black text-slate-800">
+            {Math.round(data?.speed || 0)}{" "}
+            <span className="text-xs font-medium">km/h</span>
+          </span>
+        </div>
+      </main>
 
-      <div className="bg-black px-4 py-3 text-sm">
-        <div className="flex justify-between">
-          <span>Total Distance</span>
-          <span>{route.totalDistance?.toFixed(2)} km</span>
+      {/* ===== INFO PANEL ===== */}
+      <section className="bg-slate-900 text-white p-4 shadow-2xl z-10 rounded-t-3xl -mt-6">
+        <div className="flex justify-between items-center mb-4 px-2">
+          <div className="flex flex-col">
+            <span className="text-slate-400 text-[10px] uppercase font-bold">
+              Total Route
+            </span>
+            <span className="text-sm font-semibold">
+              {route.totalDistance?.toFixed(2)} km
+            </span>
+          </div>
+          <div className="flex flex-col items-end">
+            <span className="text-slate-400 text-[10px] uppercase font-bold">
+              Last Active
+            </span>
+            <span className="text-sm font-semibold">
+              {new Date(lastUpdated).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </span>
+          </div>
         </div>
 
-        <div className="flex justify-between text-xs text-gray-500">
-          <span>Last update</span>
-          <span>{new Date(lastUpdated).toLocaleTimeString()}</span>
-        </div>
-
-        <div className="bg-white px-4 py-2 shadow-sm flex justify-between text-sm">
-          <div>
-            <p className="text-gray-500">Current Stop</p>
-            <p className="font-semibold text-blue-600">
-              {route.stops[data.currentStopIndex]?.stop?.name || "Starting"}
+        {/* Stop Status Cards */}
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <div className="bg-slate-800/50 p-3 rounded-2xl border border-slate-700">
+            <p className="text-slate-400 text-[10px] uppercase font-bold mb-1">
+              Current Stop
+            </p>
+            <p className="text-sm font-bold truncate text-blue-400">
+              {route.stops[data.currentStopIndex]?.stop?.name || "Departure"}
             </p>
           </div>
 
-          <div>
-            <p className="text-gray-500">Next Stop</p>
-            <p className="font-semibold text-green-600">
-              {route.stops[data.nextStopIndex]?.stop?.name || "End"}
+          <div className="bg-slate-800/50 p-3 rounded-2xl border border-slate-700">
+            <p className="text-slate-400 text-[10px] uppercase font-bold mb-1">
+              Next Stop
             </p>
-          </div>
-
-          <div>
-            <p className="text-gray-500">Speed</p>
-            <p className="font-semibold text-green-600">
-              {data?.speed || "speed 11"}
+            <p className="text-sm font-bold truncate text-green-400">
+              {route.stops[data.nextStopIndex]?.stop?.name || "Terminal"}
             </p>
           </div>
         </div>
-      </div>
 
-      {/* ===== TOGGLE ===== */}
-
-      <div className="sticky bottom-0 bg-white border-t p-4">
+        {/* Duty Button */}
         <button
           disabled={sending}
           onClick={toggleDuty}
-          className={`w-full py-4 rounded-xl text-lg font-semibold transition
-        ${status === "running" ? "bg-red-500 text-white" : "bg-green-500 text-white"}`}
+          className={`w-full py-4 rounded-2xl text-lg font-black tracking-wide transition-all shadow-xl active:scale-95
+        ${
+          status === "running"
+            ? "bg-red-500 hover:bg-red-600 shadow-red-900/20"
+            : "bg-green-500 hover:bg-green-600 shadow-green-900/20"
+        }`}
         >
-          {sending
-            ? "Updating..."
-            : status === "running"
-              ? "Go OFF Duty"
-              : "Go ON Duty"}
+          {sending ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg
+                className="animate-spin h-5 w-5 text-white"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  fill="none"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Syncing...
+            </span>
+          ) : status === "running" ? (
+            "END SHIFT"
+          ) : (
+            "START SHIFT"
+          )}
         </button>
-      </div>
+      </section>
     </div>
   );
 };
