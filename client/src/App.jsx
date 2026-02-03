@@ -10,6 +10,8 @@ import DriverHome from "./pages/Driver/DriverHome";
 import Unauthorise from "./pages/Unauthorise";
 import MagicLinkLogin from "./components/driver/MagicLinkLogin";
 import SelectBus from "./pages/Driver/SelectBus";
+import BusDetailsPage from "./components/user/BusDetailsPage";
+import TrackingPage from "./pages/TrackingPage";
 
 const App = () => {
   return (
@@ -34,6 +36,8 @@ const App = () => {
         {/* user + admin  */}
         <Route element={<Protect allowedRoles={["user", "admin"]} />}>
           <Route path="/" element={<Home />} />
+          <Route path="/bus/:busId" element={<BusDetailsPage/>}/>
+          <Route path="/bus/live/:busId" element={<TrackingPage/>}/>
         </Route>
       </Routes>
 

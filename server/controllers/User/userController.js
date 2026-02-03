@@ -21,7 +21,7 @@ const searchBusByNumber = async (req, res) => {
       isActive: true,
     }).populate("routeId");
 
-    res.status(200).json({
+    res.status(200).json({  
       success: true,
       count: buses.length,
       data:buses,
@@ -43,7 +43,7 @@ const getBusesBetweenStops = async (req, res) => {
     }
 
     const routes = await Route.find({
-      "stops.stopId": {$all: [startStopId, endStopId]},
+      "stops.stop": {$all: [startStopId, endStopId]},
     });
 
     const routeIds = routes.map((r) => r._id);
@@ -56,6 +56,32 @@ const getBusesBetweenStops = async (req, res) => {
     res.json({success: true, data:buses});
   } catch (err) {
     res.status(500).json({success: false, message: err.message});
+  }
+};
+
+const searchStops = async (req, res) => {
+  try {
+    const {q} = req.query;
+
+    if (!q) {
+      return res.json({success: true, data: []});
+    }
+
+    const stops = await Stop.find({
+      name: {$regex: q, $options: "i"}, // case-insensitive
+    })
+      .limit(10)
+      .select("_id name");
+
+    res.json({
+      success: true,
+      data: stops,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
   }
 };
 
@@ -82,7 +108,7 @@ const getBusCardDetails = async (req, res) => {
 
     const bus = await Bus.findById(busId).populate({
       path: "routeId",
-      populate: {path: "stops.stopId"},
+      populate: {path: "stops.stop"},
     });
     if (!bus) {
       return res.status(404).json({success: false, message: "Bus not found"});
@@ -100,8 +126,11 @@ const getBusCardDetails = async (req, res) => {
       success: true,
       busNumber: bus.busNumber,
       totalStops: bus.routeId.stops.length,
+      fare:bus.fare,
+      serviceType:bus.serviceType,
       eta,
       route: bus.routeId,
+      speed:liveBus.speed || 0,
     });
   } catch (error) {
     res.status(500).json({success: false, message: error.message});
@@ -135,7 +164,7 @@ const getRouteDetails = async(req,res)=>{
    try {
      const {routeId} = req.params;
 
-     const route = await Route.findById(routeId).populate("stops.stopId");
+     const route = await Route.findById(routeId).populate("stops.stop");
 
      if (!route) {
        return res
@@ -178,7 +207,7 @@ const getStopETA = async (req, res) => {
     }
 
     const stopIndex = route.stops.findIndex(
-      (s) => s.stopId.toString() === stopId
+      (s) => s.stop.toString() === stopId
     );
 
     if (stopIndex === -1) {
@@ -238,7 +267,7 @@ const getBusMiniDetails = async (req, res) => {
         status: liveBus.status,
         routeName: liveBus.busId.routeId.routeName,
         lastUpdated: liveBus.lastUpdated,
-      },
+      },  
     });
   } catch (err) {
     res.status(500).json({success: false, message: err.message});
@@ -337,4 +366,5 @@ module.exports = {
   getRouteDetails,
   getStopETA,
   getNearestBusesForStop,
+  searchStops,
 };

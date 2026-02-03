@@ -64,6 +64,8 @@ const DriverDashboard = () => {
   const handleClearBus = async () => {
     try {
       await clearBusDriverApi();
+        localStorage.removeItem("driverLocation"); // old global
+        localStorage.removeItem("simIndex");
       navigate("/driver/select-bus"); // go back to select page
     } catch (error) {
       console.log(error);

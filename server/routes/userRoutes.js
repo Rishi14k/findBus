@@ -9,6 +9,7 @@ const {
   getRouteDetails,
   getStopETA,
   getNearestBusesForStop,
+  searchStops,
 } = require("../controllers/User/userController");
 
 const router = express.Router()
@@ -26,5 +27,7 @@ router.get("/routes/:routeId/live-buses", getLiveBusesOnRoute);
 router.get('/route-details/:routeId',getRouteDetails)
 router.get('/eta/stop/:stopId',getStopETA)
 router.get('/nearest/stop/:stopId',getNearestBusesForStop)
+
+router.get("/stops/search", searchStops);
 
 module.exports = router
