@@ -10,8 +10,8 @@ const stopIcon = new L.Icon({
 
 const nextStopIcon = new L.Icon({
   iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
-  iconSize: [30, 45],
-  iconAnchor: [15, 45],
+  iconSize: [24, 24],
+  iconAnchor: [12, 12],
 });
 
 const busIcon = new L.Icon({
@@ -21,9 +21,7 @@ const busIcon = new L.Icon({
 });
 
 const MainMapView = ({polyline = [], stops = [], liveLocation, busNumber}) => {
-  const center = polyline.length
-    ? [polyline[0][1], polyline[0][0]]
-    : [23.02, 72.55];
+const center = polyline.length ? polyline[0] : [23.02, 72.55];
 
   const busPosition = liveLocation
     ? [
@@ -49,11 +47,7 @@ const MainMapView = ({polyline = [], stops = [], liveLocation, busNumber}) => {
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
       {/* ROUTE LINE */}
-      <Polyline
-        positions={polyline.map((p) => [p[1], p[0]])}
-        color="#111"
-        weight={5}
-      />
+      <Polyline positions={polyline} color="#111" weight={5} />
 
       {/* STOPS */}
       {stops.map((s, i) => {
@@ -92,7 +86,6 @@ const MainMapView = ({polyline = [], stops = [], liveLocation, busNumber}) => {
 
               {liveLocation ? (
                 <>
-
                   {liveLocation.etaToNextStop && (
                     <p className="text-green-600 font-semibold">
                       Next stop in {liveLocation.etaToNextStop} min

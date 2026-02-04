@@ -296,7 +296,7 @@ const getNearestBusesForStop = async (req, res) => {
     }
 
     const targetStopIndex = route.stops.findIndex(
-      (s) => s.stopId.toString() === stopId
+      (s) => s.stop.toString() === stopId
     );
 
     if (targetStopIndex === -1) {
@@ -355,6 +355,74 @@ const getNearestBusesForStop = async (req, res) => {
   }
 };
 
+const getNearbyRunningBuses = async (req, res) => {
+  try {
+    const {lat, lng, radius = 5000, limit = 5} = req.query;
+
+    if (!lat || !lng) {
+      return res.status(400).json({
+        success: false,
+        message: "lat and lng required",
+      });
+    }
+
+    const nearbyLiveBuses = await LiveBus.find({
+      status: "running",
+      location: {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: [Number(lng), Number(lat)],
+          },
+          $maxDistance: Number(radius), // meters
+        },
+      },
+    })
+      .limit(Number(limit))
+      .populate({
+        path: "busId",
+        populate: {path: "routeId"},
+      });
+
+    const result = nearbyLiveBuses.map((live) => ({
+      _id: live.busId._id,
+      busNumber: live.busId.busNumber,
+      fare: live.busId.fare,
+      totalStops: live.busId.totalStops,
+      routeId: live.busId.routeId,
+      speed: live.speed,
+      location: live.location,
+    }));
+
+    res.json({
+      success: true,
+      count: result.length,
+      data: result,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+const getRandomBuses = async (req, res) => {
+  const limit = Number(req.query.limit || 3);
+
+  const buses = await Bus.aggregate([{$sample: {size: limit}}]).lookup({
+    from: "routes",
+    localField: "routeId",
+    foreignField: "_id",
+    as: "routeId",
+  });
+
+  res.json({
+    success: true,
+    data: buses,
+  });
+};
+
+
 
 module.exports = {
   searchBusByNumber,
@@ -367,4 +435,6 @@ module.exports = {
   getStopETA,
   getNearestBusesForStop,
   searchStops,
+  getNearbyRunningBuses,
+  getRandomBuses
 };

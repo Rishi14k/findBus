@@ -10,6 +10,8 @@ const {
   getStopETA,
   getNearestBusesForStop,
   searchStops,
+  getNearbyRunningBuses,
+  getRandomBuses,
 } = require("../controllers/User/userController");
 
 const router = express.Router()
@@ -29,5 +31,7 @@ router.get('/eta/stop/:stopId',getStopETA)
 router.get('/nearest/stop/:stopId',getNearestBusesForStop)
 
 router.get("/stops/search", searchStops);
+router.get('/nearby/buses',getNearbyRunningBuses)
+router.get('/random/buses',getRandomBuses)
 
 module.exports = router

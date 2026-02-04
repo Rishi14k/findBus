@@ -74,26 +74,49 @@ const DriverDashboard = () => {
 
   /* ========== TOGGLE DUTY ========== */
 
-  const toggleDuty = async () => {
-    // Determine new status BEFORE starting the request
-    const isCurrentlyOff = data.status !== "running";
-    console.log("status", isCurrentlyOff)
-    setSending(true);
-    try {
-      const response = await toggleDriverDutyApi({onDuty: isCurrentlyOff});
+const toggleDuty = async () => {
+  const isCurrentlyOff = data.status !== "running";
+  setSending(true);
 
-      // Check if the API actually succeeded based on your backend response
-      if (response.data.success) {
-        await fetchDashboard();
-        // Toast.show("Duty updated!"); // Optional feedback
+  try {
+    const response = await toggleDriverDutyApi({onDuty: isCurrentlyOff});
+
+    if (response.data.success) {
+      // 👇 If turning OFF duty → reset simulation
+      if (!isCurrentlyOff) {
+        // Stop interval
+        if (simIntervalRef.current) {
+          clearInterval(simIntervalRef.current);
+          simIntervalRef.current = null;
+        }
+
+        // Reset state
+        setSimIndex(0);
+        setDriverLocation(null);
+
+        // Clear storage
+        localStorage.removeItem("simIndex");
+        localStorage.removeItem("driverLocation");
       }
-    } catch (error) {
-      console.error("Toggle duty failed:", error);
-      // alert("Failed to update duty. Please check your connection.");
-    } finally {
-      setSending(false);
+
+      // 👇 If turning ON duty → restart movement
+      if (isCurrentlyOff) {
+        setSimIndex(0);
+
+        setTimeout(() => {
+          startDummyMovement();
+        }, 500); // small delay after state update
+      }
+
+      await fetchDashboard();
     }
-  };
+  } catch (error) {
+    console.error("Toggle duty failed:", error);
+  } finally {
+    setSending(false);
+  }
+};
+
   // dummy movement of bus
 
   const startDummyMovement = () => {

@@ -4,6 +4,7 @@ import MainMapView from "../components/user/MainMapView";
 import RoutePanel from "../components/user/RoutePanel";
 import { getBusCardDetailsApi } from "../api/user.api";
 import socket from "../socket";
+import Navbar from "../components/user/Navbar";
 
 const TrackingPage = () => {
   const {busId} = useParams();
@@ -53,18 +54,27 @@ const TrackingPage = () => {
      };
   },[busId])
 
+  const polylinePoints = busData?.route?.stops
+    .sort((a, b) => a.order - b.order)
+    .map((s) => [
+      s.stop.location.coordinates[1], // lat
+      s.stop.location.coordinates[0], // lng
+    ])
+    .filter((p) => !isNaN(p[0]) && !isNaN(p[1])); 
+
   if (loading) return <p className="p-4">Loading tracking...</p>;
   if (!busData) return <p>Bus not found</p>;
 
   return (
     <div className="h-screen flex flex-col">
+      <Navbar/>
       {/* MAP (60%) */}
 
     
 
       <div className="h-[60%]">
         <MainMapView
-          polyline={busData.route.polyline}
+          polyline={polylinePoints}
           stops={busData.route.stops}
           liveLocation={liveLocation}
           busNumber={busData.busNumber}
@@ -86,7 +96,7 @@ const TrackingPage = () => {
       </div>
 
       {/* ROUTE UI (40%) */}
-      <div className="h-[40%] overflow-auto bg-gray-50 rounded-t-3xl shadow-inner">
+      <div className="h-[40%] overflow-auto bg-gray-50  shadow-inner">
         <RoutePanel bus={busData} liveData={liveLocation} />
       </div>
     </div>

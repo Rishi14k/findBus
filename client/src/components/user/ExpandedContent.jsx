@@ -66,7 +66,7 @@ const ExpandedContent = ({onResults}) => {
   };
 
   return (
-    <div className="space-y-8 py-2 text-red-800">
+    <div className="space-y-8 py-2 text-[#F16D34]">
       <h2 className="text-2xl font-bold text-gray-900">Plan Journey</h2>
 
       <div className="relative space-y-3">

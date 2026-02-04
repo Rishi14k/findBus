@@ -56,4 +56,6 @@ const liveBusSchema = new mongoose.Schema(
   {timestamps: true}
 );
 
+liveBusSchema.index({location: "2dsphere"});
+
 module.exports = mongoose.model("Livebus", liveBusSchema);

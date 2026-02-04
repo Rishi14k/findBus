@@ -239,7 +239,7 @@ useEffect(() => {
              setIsMobileMenuOpen(false);
            }}
          />
-         <SidebarItem
+         {/* <SidebarItem
            icon={MapPin}
            label="Live Map"
            active={activeTab === "live"}
@@ -247,7 +247,7 @@ useEffect(() => {
              setActiveTab("live");
              setIsMobileMenuOpen(false);
            }}
-         />
+         /> */}
          <div className="pt-4 pb-2 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
            Management
          </div>
