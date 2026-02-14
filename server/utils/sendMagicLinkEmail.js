@@ -1,15 +1,30 @@
 const nodemailer = require("nodemailer");
 
+// const transporter = nodemailer.createTransport({
+//     service: "gmail",
+//     auth:{
+//         user:process.env.MAIL_USER,
+//         pass:process.env.MAIL_PASS,
+//     },
+//     tls:{
+//         rejectUnauthorized:false,
+//     }
+// })
+
 const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth:{
-        user:process.env.MAIL_USER,
-        pass:process.env.MAIL_PASS,
-    },
-    tls:{
-        rejectUnauthorized:false,
-    }
-})
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // MUST be false for port 587
+  auth: {
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS, // Gmail App Password
+  },
+  tls: {
+    rejectUnauthorized: false,
+  },
+  connectionTimeout: 10000,
+});
+
 
 module.exports = async (toEmail, magicLink) => {
   try {
