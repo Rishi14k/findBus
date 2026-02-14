@@ -31,6 +31,18 @@ const selectBus = async (req, res) => {
       });
     }
 
+        const existingBus = await LiveBus.findOne({
+          busId,
+          assignedBus: true,
+        });
+
+        if (existingBus) {
+          return res.status(400).json({
+            success: false,
+            message: "This bus is already assigned to another driver",
+          });
+        }
+
     // 2. Check if bus is already assigned to another driver
     // const existingBus = await LiveBus.findOne({
     //   busId,

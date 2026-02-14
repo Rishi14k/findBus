@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {getAllBusesDriverApi, getDriverDashboardApi, selectBusDriverApi} from "../../api/driver.api";
+import { toast } from "react-toastify";
 
 const SelectBus = () => {
   const [buses, setBuses] = useState([]);
@@ -24,8 +25,13 @@ const SelectBus = () => {
   }, []);
 
   const handleSelect = async()=>{
-    await selectBusDriverApi({busId})
-    navigate('/driver/dashboard')
+    try {
+      
+    await selectBusDriverApi({busId});
+    navigate("/driver/dashboard");
+    } catch (error) {
+        toast.error("Bus already assigned!");
+    }
   }
 
   return (
