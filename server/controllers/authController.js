@@ -33,6 +33,8 @@ const requestOtp = async(req,res)=>{
           code: otp,
           expireAt:Date.now() + 5*60*1000
         };
+  console.log("MAIL_USER:", process.env.MAIL_USER);
+console.log("MAIL_PASS exists:", !!process.env.MAIL_PASS);
 
         await user.save();
         await sendOtpMail(email,otp)
