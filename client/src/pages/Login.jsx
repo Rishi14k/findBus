@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { googleLoginApi, requestOtpApi, verifyOtpApi } from '../api/auth.api';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { connectSocket } from '../socket';
 
 
 const PRIMARY_COLOR = "#123D87";
@@ -64,6 +65,7 @@ const Login = () => {
          localStorage.setItem("token", res.data.token);
          localStorage.setItem("user", JSON.stringify(res.data.user));
          toast.success("Login successful!");
+         connectSocket();
          
          const role = res.data.user.role;
 
@@ -112,7 +114,7 @@ const Login = () => {
      };
   return (
     <div>
-      <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center p-10 font-sans">
+      <div className="min-h-screen bg-[#BBE0EF] flex flex-col justify-center items-center p-10 font-sans">
         <div className="w-full max-w-md bg-white border-1 rounded-2xl shadow-xl overflow-hidden">
           <div
             className="h-32 flex items-center justify-center"
@@ -136,9 +138,8 @@ const Login = () => {
             {step === "email" ? (
               <div className="space-y-6">
                 {/* Google Login Button */}
-              
-                  <div id="googleBtn" className="w-full"></div>
-                
+
+                <div id="googleBtn" className="w-full"></div>
 
                 <div className="relative flex py-1 items-center">
                   <div className="flex-grow border-t border-gray-200"></div>
@@ -150,13 +151,13 @@ const Login = () => {
 
                 <form onSubmit={handleEmailSubmit} className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-white mb-1">
+                    <label className="block text-sm font-medium text-black mb-1">
                       Email Address
                     </label>
                     <input
                       type="email"
                       required
-                      className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#123D87] focus:ring-2 focus:ring-[#123D87]/20 outline-none transition-all"
+                      className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#123D87] focus:ring-2 focus:ring-[#123D87]/20 outline-none transition-all text-[#123D87]"
                       placeholder="commuter@citybus.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}

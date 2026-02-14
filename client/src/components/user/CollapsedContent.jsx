@@ -52,7 +52,7 @@ const CollapsedContent = ({buses = []}) => {
 
       {/* LIST */}
       {/* LIST */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-1">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-1">
         {buses.map((bus) => {
           return (
             <div
@@ -61,7 +61,7 @@ const CollapsedContent = ({buses = []}) => {
               className="
           group
           relative
-          p-5
+          p-4
           rounded-3xl
           border border-gray-100
           bg-white
@@ -75,7 +75,7 @@ const CollapsedContent = ({buses = []}) => {
         "
             >
               {/* TOP ROW: Identity & Fare */}
-              <div className="flex items-start justify-between mb-4">
+              <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100/50 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                     <BusIcon size={26} color={PRIMARY_COLOR} />
@@ -85,12 +85,12 @@ const CollapsedContent = ({buses = []}) => {
                     <h4 className="font-black text-gray-900 text-lg tracking-tight leading-none">
                       {bus.busNumber}
                     </h4>
-                    {bus.isActive && (
+                    {/* {bus.isActive && (
                       <div className="mt-1.5 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-wider border border-emerald-100/50">
                         <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
                         LIVE
                       </div>
-                    )}
+                    )} */}
                   </div>
                 </div>
 
@@ -107,14 +107,14 @@ const CollapsedContent = ({buses = []}) => {
               {/* MIDDLE ROW: Route Details */}
               <div className="relative py-3 border-t border-gray-50">
                 <div className="flex flex-col gap-0.5">
-                  <p className="text-[15px] font-bold text-gray-800 leading-tight group-hover:text-blue-600 transition-colors">
+                  <p className="text-[16px] font-bold text-[#F16D34] leading-tight group-hover:text-blue-600 transition-colors">
                     {bus?.routeId?.routeName || bus?.routeId[0]?.routeName}
                   </p>
-                  <div className="flex items-center gap-2">
-                    <span className="px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 text-[10px] font-mono font-bold uppercase">
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 text-[14px] font-mono font-bold uppercase">
                       {bus?.routeId?.routeCode || bus?.routeId[0]?.routeCode}
                     </span>
-                    <span className="text-[11px] font-medium text-gray-400">
+                    <span className="text-[14px] font-medium text-gray-400">
                       • {bus?.serviceType}
                     </span>
                   </div>
@@ -122,28 +122,59 @@ const CollapsedContent = ({buses = []}) => {
               </div>
 
               {/* BOTTOM ROW: Stats */}
-              <div className="flex items-center gap-4 mt-2 pt-3 border-t border-gray-50 text-[12px] font-semibold text-gray-500">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-blue-500">📍</span>
-                  {(
-                    bus?.routeId?.totalDistance ||
-                    bus?.routeId[0]?.totalDistance
-                  )?.toFixed(1)}{" "}
-                  km
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-orange-500">🛑</span>
-                  {bus.totalStops} Stops
+              <div className="flex items-center gap-4 mt-3 pt-3 border-t border-gray-100 text-[12px] font-medium">
+                {/* Distance Metric */}
+                <div className="flex items-center gap-1.5 px-2 py-1 bg-blue-50 text-blue-700 rounded-lg transition-colors hover:bg-blue-100">
+                  <svg
+                    className="w-3.5 h-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    strokeWidth="2.5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
+                    />
+                  </svg>
+                  <span>
+                    {(
+                      bus?.routeId?.totalDistance ||
+                      bus?.routeId[0]?.totalDistance ||
+                      0
+                    ).toFixed(1)}{" "}
+                    km
+                  </span>
                 </div>
 
-                {/* Subtle Hover Action Label */}
-                <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity text-blue-600 flex items-center gap-1">
-                  <span className="text-[10px] font-bold uppercase">
+                {/* Stops Metric */}
+                <div className="flex items-center gap-1.5 px-2 py-1 bg-orange-50 text-orange-700 rounded-lg transition-colors hover:bg-orange-100">
+                  <svg
+                    className="w-3.5 h-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    strokeWidth="2.5"
+                  >
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                  <span>{bus.totalStops} Stops</span>
+                </div>
+
+                {/* Interactive Action Label */}
+                <div className="ml-auto flex items-center gap-1 text-blue-600 font-bold opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-2 transition-all duration-300 ease-out">
+                  <span className="text-[10px] uppercase tracking-wider">
                     Select
                   </span>
                   <svg
-                    width="12"
-                    height="12"
+                    className="w-3.5 h-3.5 transform transition-transform group-hover:translate-x-1"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"

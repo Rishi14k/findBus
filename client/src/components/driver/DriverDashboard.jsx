@@ -12,7 +12,7 @@ import "leaflet/dist/leaflet.css";
 import {useNavigate} from 'react-router-dom'
 
 import {clearBusDriverApi, getDriverDashboardApi, toggleDriverDutyApi} from "../../api/driver.api";
-import socket from "../../socket";
+import socket, { connectSocket } from "../../socket";
 import { interpolatePoints } from "../../../utils/interpolatePoints";
 import { getDistanceMeters } from "../../../utils/getDistanceMeters";
 
@@ -42,6 +42,8 @@ const DriverDashboard = () => {
   const [driverLocation, setDriverLocation] = useState(null);
   const [eta, setEta] = useState(null);
 
+  const [showConfirm, setShowConfirm] = useState(false);
+
   const navigate = useNavigate();
 
   const watchIdRef = useRef(null);
@@ -62,6 +64,7 @@ const DriverDashboard = () => {
 
   //clear bus select
   const handleClearBus = async () => {
+    if(!showConfirm) return;
     try {
       await clearBusDriverApi();
         localStorage.removeItem("driverLocation"); // old global
@@ -244,6 +247,11 @@ const toggleDuty = async () => {
   /* ========== SOCKET LISTENER ========== */
 
   useEffect(() => {
+
+    if (socket.disconnected) {
+      connectSocket();
+    }
+
     if (!socket || !data?.busId) return;
 
     // 1. Join the room
@@ -313,7 +321,11 @@ const toggleDuty = async () => {
   // }, [data?.busId]);
 
   if (loading) return <div className="p-4">Loading...</div>;
+  if(!data){
+    navigate('/driver/select-bus')
+  }
   if (!data) return <div className="p-4">No Data</div>;
+
 
   const {bus, route, status, lastUpdated} = data;
 
@@ -390,15 +402,34 @@ const toggleDuty = async () => {
             </p>
           </div>
         </div>
-        <div className="flex flex-col items-end gap-1">
-          <StatusBadge status={status} />
-          <button
-            onClick={handleClearBus}
-            className="text-[10px] font-bold text-red-500 hover:text-red-700 transition uppercase underline underline-offset-2"
-          >
-            Clear / Change
-          </button>
-        </div>
+       <div className="flex flex-col items-end gap-1">
+  <StatusBadge status={status} />
+  
+  {!showConfirm ? (
+    <button
+      onClick={() => setShowConfirm(true)}
+      className="text-[10px] font-bold text-red-500 hover:text-red-700 transition uppercase underline underline-offset-2"
+    >
+      Clear / Change
+    </button>
+  ) : (
+    <div className="flex gap-2 items-center animate-in fade-in slide-in-from-right-2">
+      <span className="text-[10px] font-bold text-gray-500 uppercase">Sure?</span>
+      <button
+        onClick={handleClearBus}
+        className="text-[10px] font-bold text-white bg-red-500 px-2 py-0.5 rounded hover:bg-red-600 uppercase"
+      >
+        Yes
+      </button>
+      <button
+        onClick={() => setShowConfirm(false)}
+        className="text-[10px] font-bold text-gray-400 hover:text-gray-600 uppercase"
+      >
+        No
+      </button>
+    </div>
+  )}
+</div>
       </header>
 
       {/* ===== MAP CONTAINER ===== */}

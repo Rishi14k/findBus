@@ -43,10 +43,10 @@ const BusDetailsPage = () => {
         {/* BUS TICKET CARD */}
         <div
           onClick={() => navigate(`/bus/live/${busId}`)}
-          className="relative bg-white rounded-[2rem] shadow-2xl shadow-blue-900/10 overflow-hidden cursor-pointer active:scale-[0.98] transition-transform duration-200 border border-gray-100"
+          className="relative bg-white rounded-[2rem] shadow-2xl shadow-blue-900/10 overflow-hidden cursor-pointer active:scale-[0.98] transition-transform duration-200 border border-gray-200"
         >
           {/* TOP SECTION: Branding & Primary Info */}
-          <div className="bg-gradient-to-br from-blue-600 to-blue-700 p-6 text-white relative overflow-hidden">
+          <div className="bg-[#123D87] p-6 text-white relative overflow-hidden">
             {/* Background Decoration */}
             <div className="absolute top-[-20%] right-[-10%] w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
 
@@ -88,14 +88,14 @@ const BusDetailsPage = () => {
 
           {/* DASHED DIVIDER (Ticket Look) */}
           <div className="relative h-4 bg-white flex items-center">
-            <div className="absolute -left-3 w-6 h-6 bg-gray-50 rounded-full border-r border-gray-100"></div>
-            <div className="w-full border-t-2 border-dashed border-gray-100 mx-4"></div>
-            <div className="absolute -right-3 w-6 h-6 bg-gray-50 rounded-full border-l border-gray-100"></div>
+            <div className="absolute -left-3 w-6 h-6 bg-gray-200 rounded-full border-r border-gray-100"></div>
+            <div className="w-full border-t-2 border-dashed border-gray-400 mx-4"></div>
+            <div className="absolute -right-3 w-6 h-6 bg-gray-200 rounded-full border-l border-gray-100"></div>
           </div>
 
           <div className="p-6">
             {/* QUICK STATS */}
-            <div className="grid grid-cols-3 gap-2 bg-gray-50 rounded-2xl p-4 mb-6">
+            <div className="grid grid-cols-3 gap-2 bg-gray-200 rounded-2xl p-4 mb-6">
               <div className="text-center">
                 <p className="text-gray-400 text-[9px] uppercase font-black">
                   Fare
@@ -129,12 +129,12 @@ const BusDetailsPage = () => {
                 <h3 className="text-sm font-black text-gray-800 uppercase tracking-wide">
                   Arrival Schedule
                 </h3>
-                {bus.eta?.length > 0 && (
+                {/* {bus.eta?.length > 0 && (
                   <span className="flex items-center gap-1 text-[10px] text-emerald-500 font-black tracking-widest uppercase">
                     <span className="h-1.5 w-1.5 bg-emerald-500 rounded-full animate-ping" />
                     Live
                   </span>
-                )}
+                )} */}
               </div>
 
               <div className="flex gap-3">
@@ -149,8 +149,8 @@ const BusDetailsPage = () => {
                       <div
                         className={`p-3 rounded-2xl border-2 text-center transition-all ${
                           i === 0
-                            ? "bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-200"
-                            : "bg-white border-gray-100 text-gray-400"
+                            ? "bg-[#F16D34] text-white shadow-lg shadow-blue-200"
+                            : "bg-white border-gray-200 text-gray-400"
                         }`}
                       >
                         <p
@@ -174,28 +174,28 @@ const BusDetailsPage = () => {
             </div>
 
             {/* ROUTE PROGRESS VISUAL */}
-            <div className="mt-8 pt-6 border-t border-gray-100">
+            <div className="mt-8 pt-6 border-t border-gray-200">
               <div className="flex justify-between items-center mb-4">
                 <div className="text-left">
-                  <p className="text-[9px] font-black text-gray-400 uppercase">
+                  <p className="text-[12px] font-black text-gray-400 uppercase">
                     Origin
                   </p>
-                  <p className="text-xs font-bold text-gray-700 truncate max-w-[120px]">
+                  <p className="text-lg font-bold text-gray-700 truncate max-w-[120px]">
                     {bus.route.stops[0]?.stop.name}
                   </p>
                 </div>
                 <div className="flex-1 flex flex-col items-center px-4">
-                  <div className="w-full h-[2px] bg-gray-100 relative">
+                  <div className="w-full h-[5px] bg-gray-200 relative">
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center">
                       <span className="text-xs">🚌</span>
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-[9px] font-black text-gray-400 uppercase">
+                  <p className="text-[12px] font-black text-gray-400 uppercase">
                     Destination
                   </p>
-                  <p className="text-xs font-bold text-gray-700 truncate max-w-[120px]">
+                  <p className="text-lg font-bold text-gray-700 truncate max-w-[120px]">
                     {bus.route.stops[bus.route.stops.length - 1]?.stop.name}
                   </p>
                 </div>

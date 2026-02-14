@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {Route, Routes} from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -13,7 +13,28 @@ import SelectBus from "./pages/Driver/SelectBus";
 import BusDetailsPage from "./components/user/BusDetailsPage";
 import TrackingPage from "./pages/TrackingPage";
 
+ export const usePWAInstall = () => {
+   const [deferredPrompt, setDeferredPrompt] = useState(null);
+
+   useEffect(() => {
+     window.addEventListener("beforeinstallprompt", (e) => {
+       e.preventDefault();
+       setDeferredPrompt(e);
+     });
+   }, []);
+
+   const installApp = async () => {
+     if (!deferredPrompt) return;
+     deferredPrompt.prompt();
+     const {outcome} = await deferredPrompt.userChoice;
+     if (outcome === "accepted") setDeferredPrompt(null);
+   };
+
+   return {isInstallable: !!deferredPrompt, installApp};
+ };
+
 const App = () => {
+
   return (
     <>
       <Routes>
@@ -36,8 +57,8 @@ const App = () => {
         {/* user + admin  */}
         <Route element={<Protect allowedRoles={["user", "admin"]} />}>
           <Route path="/" element={<Home />} />
-          <Route path="/bus/:busId" element={<BusDetailsPage/>}/>
-          <Route path="/bus/live/:busId" element={<TrackingPage/>}/>
+          <Route path="/bus/:busId" element={<BusDetailsPage />} />
+          <Route path="/bus/live/:busId" element={<TrackingPage />} />
         </Route>
       </Routes>
 

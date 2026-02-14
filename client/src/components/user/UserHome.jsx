@@ -69,10 +69,12 @@ const UserHome = () => {
 
 
   return (
-    <div className="flex flex-col h-screen w-full bg-gray-50 overflow-hidden font-sans">
-      <Navbar />
+    <div className="flex flex-col h-screen w-full bg-gray-50 overflow-visible font-sans">
+      <div className="z-[100]">
+        <Navbar />
+      </div>
 
-      <div className="relative flex-grow flex flex-col">
+      <div className="relative flex-grow flex flex-col z-10">
         {/* MAP VIEW */}
         <div
           className={`w-full transition-all duration-500 ease-in-out ${isExpanded ? "h-[15%]" : "h-[60%]"}`}

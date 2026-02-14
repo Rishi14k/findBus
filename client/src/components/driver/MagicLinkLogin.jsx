@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect } from 'react'
 import {useNavigate, useSearchParams} from "react-router-dom"
 import { getDriverDashboardApi } from '../../api/driver.api';
+import { connectSocket } from '../../socket';
 
 const MagicLinkLogin = () => {
     const [params] = useSearchParams();
@@ -22,15 +23,22 @@ const MagicLinkLogin = () => {
                 {token},
               );
 
+
               localStorage.setItem("token", res.data.token);
               localStorage.setItem("user", JSON.stringify(res.data.user));
 
+              connectSocket();
+
+              if (res.data.user.role !== "driver") {
+                navigate("/unauthorized");
+                return;
+              }
+
             try {
                 await getDriverDashboardApi()
-                navigate('/driver/dashboard')
-                console.log("to dash")  
+                navigate('/driver/dashboard') 
             } catch (error) {
-                navigate('driver/select-bus')
+                navigate('/driver/select-bus')
             }
           } catch (error) {
             console.log("Login failed")
