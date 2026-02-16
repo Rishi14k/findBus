@@ -1,34 +1,24 @@
-const nodemailer = require("nodemailer");
 
-// const transporter = nodemailer.createTransport({
-//     service: "gmail",
-//     auth:{
-//         user:process.env.MAIL_USER,
-//         pass:process.env.MAIL_PASS,
-//     },
-//     tls:{
-//         rejectUnauthorized:false,
-//     }
-// })
+const axios = require("axios");
 
-const transporter = nodemailer.createTransport({
-  host: "smtp-relay.brevo.com",
-  port: 587,
-  secure: false, // MUST be false for port 587
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS, // Gmail App Password
-  }
-});
-
+const BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
 
 module.exports = async (toEmail, magicLink) => {
   try {
-    await transporter.sendMail({
-      from: '"Bus Tracker" <trackbus.app@gmail.com>',
-      to: toEmail,
-      subject: "Driver Portal: Your Secure Login Link",
-      html: `
+    const response = await axios.post(
+      BREVO_API_URL,
+      {
+        sender: {
+          name: "Bus Tracker",
+          email: process.env.BREVO_SENDER_EMAIL, // Must be verified in Brevo
+        },
+        to: [
+          {
+            email: toEmail,
+          },
+        ],
+        subject: "Driver Portal: Your Secure Login Link",
+        htmlContent: `
             <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 450px; margin: auto; border: 1px solid #eee; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
                 <div style="background-color: #1e88e5; padding: 25px; text-align: center;">
                     <span style="font-size: 40px;">🚌</span>
@@ -44,7 +34,7 @@ module.exports = async (toEmail, magicLink) => {
                     <div style="text-align: center; margin: 30px 0;">
                         <a href="${magicLink}" 
                            style="background-color: #1e88e5; color: white; padding: 16px 32px; text-decoration: none; font-weight: bold; border-radius: 8px; display: inline-block; font-size: 16px; box-shadow: 0 4px 6px rgba(30, 136, 229, 0.3);">
-                           Log In to Dashboard
+                            Log In to Dashboard
                         </a>
                     </div>
                     
@@ -68,10 +58,22 @@ module.exports = async (toEmail, magicLink) => {
                 </div>
             </div>
             `,
-    });
-    console.log("Magic link email sent to:", toEmail);
+      },
+      {
+        headers: {
+          "api-key": process.env.BREVO_API_KEY,
+          "Content-Type": "application/json",
+          accept: "application/json",
+        },
+      },
+    );
+
+    console.log("Brevo Magic Link email sent ✅", response.data);
   } catch (error) {
-    console.error("Magic link email error:", error);
+    console.error(
+      "Brevo Magic Link email error ❌",
+      error.response?.data || error.message,
+    );
     throw new Error("Failed to send magic link email");
   }
 };
