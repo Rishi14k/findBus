@@ -14,29 +14,46 @@ const Login = () => {
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate()
 
-    useEffect(() => {
-      window.google.accounts.id.initialize({
-        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-        callback: async (response) => {
-          try {
-            setIsLoading(true);
-            const res = await googleLoginApi(response.credential);
-            localStorage.setItem("token", res.data.token);
-            toast.success("Login successful!");
-            navigate("/")
-          } catch (error) {
-            toast.error("Google login failed");
-          } finally {
-            setIsLoading(false);
-          }
-        },  
-      });
+   useEffect(() => {
+     const loadGoogleScript = () => {
+       return new Promise((resolve) => {
+         if (window.google) return resolve();
 
-      window.google.accounts.id.renderButton(
-        document.getElementById("googleBtn"),
-        {theme: "outline", size: "large", width: "100%"},
-      );
-    }, []);
+         const script = document.createElement("script");
+         script.src = "https://accounts.google.com/gsi/client";
+         script.async = true;
+         script.defer = true;
+         script.onload = resolve;
+         document.body.appendChild(script);
+       });
+     };
+
+     loadGoogleScript().then(() => {
+       window.google.accounts.id.initialize({
+         client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+         callback: async (response) => {
+           try {
+             setIsLoading(true);
+             const res = await googleLoginApi(response.credential);
+             localStorage.setItem("token", res.data.token);
+              localStorage.setItem("user", JSON.stringify(res.data.user));
+             toast.success("Login successful!");
+             navigate("/");
+           } catch (error) {
+             toast.error("Google login failed");
+           } finally {
+             setIsLoading(false);
+           }
+         },
+       });
+
+       window.google.accounts.id.renderButton(
+         document.getElementById("googleBtn"),
+         {theme: "outline", size: "large", width: "100%"},
+       );
+     });
+   }, []);
+
 
      const handleEmailSubmit = async (e) => {
        e.preventDefault();
