@@ -44,7 +44,7 @@ const DriverDashboard = () => {
   const [eta, setEta] = useState(null);
 
   const [showConfirm, setShowConfirm] = useState(false);
-    const {isInstallable, installApp} = usePWAInstalll();
+    const {isInstallable, installApp} = usePWAInstall();
 
 
   const navigate = useNavigate();
