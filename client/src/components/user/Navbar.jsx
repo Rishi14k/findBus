@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {searchBusByNumberApi} from "../../api/user.api";
 import {Link, useNavigate} from "react-router-dom";
-import { usePWAInstall } from "../../App";
+import {usePWAInstall} from "../../App";
 
 const PRIMARY_COLOR = "#123D87";
 
@@ -177,16 +177,14 @@ const Navbar = () => {
         )}
       </div>
 
-       {
-    isInstallable && (
-      <button
-        onClick={installApp}
-        className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold"
-      >
-        Install App
-      </button>
-    )
-  }
+      {isInstallable && (
+        <button
+          onClick={installApp}
+          className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold"
+        >
+          Install App
+        </button>
+      )}
     </header>
   );
 };

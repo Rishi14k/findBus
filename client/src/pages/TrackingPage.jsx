@@ -72,7 +72,13 @@ const TrackingPage = () => {
     ])
     .filter((p) => !isNaN(p[0]) && !isNaN(p[1])); 
 
-  if (loading) return <p className="p-4">Loading tracking...</p>;
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
   if (!busData) return <p>Bus not found</p>;
 
   return (
