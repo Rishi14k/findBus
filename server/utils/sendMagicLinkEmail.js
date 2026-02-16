@@ -12,15 +12,12 @@ const nodemailer = require("nodemailer");
 // })
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
+  host: "smtp-relay.brevo.com",
   port: 587,
   secure: false, // MUST be false for port 587
   auth: {
     user: process.env.MAIL_USER,
     pass: process.env.MAIL_PASS, // Gmail App Password
-  },
-  tls: {
-    rejectUnauthorized: false,
   }
 });
 
@@ -28,7 +25,7 @@ const transporter = nodemailer.createTransport({
 module.exports = async (toEmail, magicLink) => {
   try {
     await transporter.sendMail({
-      from: `"Bus Tracker Admin" <${process.env.MAIL_USER}>`,
+      from: '"Bus Tracker" <trackbus.app@gmail.com>',
       to: toEmail,
       subject: "Driver Portal: Your Secure Login Link",
       html: `

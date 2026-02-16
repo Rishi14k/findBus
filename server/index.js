@@ -23,9 +23,13 @@ mongoose.connect(process.env.MONGO_URI).then(()=>{
 
 const app = express();
 app.use(express.json());
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://trackbus-jeja.onrender.com",
+];
 app.use(
   cors({
-    origin: "https://trackbus-jeja.onrender.com",
+    origin: allowedOrigins,
     credentials: true,
   }),
 );
